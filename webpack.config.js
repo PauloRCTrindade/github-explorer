@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmWeebpackPlugin = require('html-webpack-plugin');
+const ReactRefrashWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -18,20 +20,28 @@ module.exports ={
 			static: {
 				directory: path.join(__dirname, 'public'),
 			},
+			hot:true,
 			// compress: true,
 			// port: 9000,
 	},
 	plugins:[
+		isDevelopment && new ReactRefrashWebpackPlugin(),
 		new HtmWeebpackPlugin({
 			template: path.resolve(__dirname,'public','index.html')
 		})
-	],
+	].filter(Boolean),
 	module:{
 		rules:[
 			{
 				test: /\.jsx$/,
 				exclude: /node_modules/,
-				use:'babel-loader'
+				use:{
+					loader:'babel-loader',
+					options:{
+					plugins:[
+						isDevelopment && require.resolve('react-refresh/babel')
+					].filter(Boolean)
+				}}
 			},
 			{
 				test: /\.scss$/,
